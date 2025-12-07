@@ -6,11 +6,13 @@ import { AWSService } from '@/types/aws-services';
 
 interface SidebarProps {
   onDragStart: (event: React.DragEvent, service: AWSService) => void;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
-export function Sidebar({ onDragStart }: SidebarProps) {
+export function Sidebar({ onDragStart, isOpen, onClose }: SidebarProps) {
   return (
-    <div className="fixed left-0 top-0 h-full w-[280px] bg-slate-900/40 backdrop-blur-xl border-r border-slate-800 p-6 overflow-y-auto">
+    <div className={`fixed inset-y-0 left-0 z-50 w-72 bg-slate-900/95 backdrop-blur-xl border-r border-slate-800 p-6 overflow-y-auto transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
       <div
         className="absolute inset-0 pointer-events-none"
         style={{

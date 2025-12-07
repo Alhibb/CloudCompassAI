@@ -18,6 +18,7 @@ export default function Page() {
   const [generateModalOpen, setGenerateModalOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { nodes, edges, setArchitecture, selectedNode, setSelectedNode } = useCanvasStore();
   const canvasRef = useRef<CanvasFlowRef>(null);
   const { toast } = useToast();
@@ -297,10 +298,24 @@ resource "aws_api_gateway_rest_api" "${resourceId}" {
         }}
       />
 
-      <Sidebar onDragStart={onDragStart} />
-      <TopBar onGenerate={handleGenerate} onExport={handleExport} onDownloadImage={handleDownloadImage} isExporting={isExporting} />
+      {/* Mobile sidebar overlay */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      <Sidebar onDragStart={onDragStart} isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <TopBar 
+        onGenerate={handleGenerate} 
+        onExport={handleExport} 
+        onDownloadImage={handleDownloadImage} 
+        isExporting={isExporting}
+        onMenuClick={() => setIsSidebarOpen(true)}
+      />
       
-      <div className="absolute left-[280px] top-[72px] right-0 bottom-0 z-10">
+      <div className="w-full h-screen md:ml-[280px] md:pt-[72px]">
         <CanvasFlow ref={canvasRef} />
       </div>
 

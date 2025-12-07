@@ -67,7 +67,7 @@ export function DetailsPanel({ node, onClose }: DetailsPanelProps) {
 
       {/* Panel */}
       <div
-        className="fixed top-[72px] right-0 bottom-0 w-[400px] bg-slate-900/40 backdrop-blur-xl border-l border-slate-800 z-50 shadow-2xl animate-slide-in-right"
+        className="fixed top-0 md:top-[72px] right-0 bottom-0 w-full md:w-80 bg-slate-900/40 backdrop-blur-xl border-l border-slate-800 z-50 shadow-2xl animate-slide-in-right"
         style={{
           boxShadow: 'inset 0 1px 0 0 rgb(148 163 184 / 0.1), -10px 0 30px rgba(0, 0, 0, 0.5)',
         }}
