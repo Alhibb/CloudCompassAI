@@ -6,6 +6,7 @@ import { TopBar } from '@/components/TopBar';
 import { CanvasFlow, CanvasFlowRef } from '@/components/CanvasFlow';
 import { ExportModal } from '@/components/ExportModal';
 import { GenerateModal } from '@/components/GenerateModal';
+import { ExplainModal } from '@/components/ExplainModal';
 import { DetailsPanel } from '@/components/DetailsPanel';
 import { CostBadge } from '@/components/CostBadge';
 import { AWSService } from '@/types/aws-services';
@@ -16,8 +17,11 @@ import { Toaster } from '@/components/ui/toaster';
 export default function Page() {
   const [exportModalOpen, setExportModalOpen] = useState(false);
   const [generateModalOpen, setGenerateModalOpen] = useState(false);
+  const [explainModalOpen, setExplainModalOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isExplaining, setIsExplaining] = useState(false);
+  const [explanation, setExplanation] = useState('');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { nodes, edges, setArchitecture, selectedNode, setSelectedNode } = useCanvasStore();
   const canvasRef = useRef<CanvasFlowRef>(null);
@@ -280,6 +284,38 @@ resource "aws_api_gateway_rest_api" "${resourceId}" {
     }
   }, [nodes, edges, toast]);
 
+  const handleExplain = useCallback(async () => {
+    setExplainModalOpen(true);
+    setIsExplaining(true);
+    setExplanation('');
+
+    try {
+      const response = await fetch('/api/explain', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          prompt: 'AWS cloud architecture',
+          nodes,
+          edges 
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate explanation');
+      }
+
+      const data = await response.json();
+      setExplanation(data.explanation || 'Unable to generate explanation.');
+    } catch (error) {
+      console.error('Error generating explanation:', error);
+      setExplanation('## Error\n\nFailed to generate architecture explanation. Please try again.');
+    } finally {
+      setIsExplaining(false);
+    }
+  }, [nodes, edges]);
+
   return (
     <div className="relative w-full h-screen overflow-hidden bg-slate-950">
       {/* Radial gradient background overlay */}
@@ -311,6 +347,7 @@ resource "aws_api_gateway_rest_api" "${resourceId}" {
         onGenerate={handleGenerate} 
         onExport={handleExport} 
         onDownloadImage={handleDownloadImage} 
+        onExplain={handleExplain}
         isExporting={isExporting}
         onMenuClick={() => setIsSidebarOpen(true)}
       />
@@ -332,12 +369,19 @@ resource "aws_api_gateway_rest_api" "${resourceId}" {
         isLoading={isGenerating}
       />
 
+      <ExplainModal
+        open={explainModalOpen}
+        onOpenChange={setExplainModalOpen}
+        explanation={explanation}
+        isLoading={isExplaining}
+      />
+
       <DetailsPanel
         node={selectedNode}
         onClose={() => setSelectedNode(null)}
       />
 
-      <CostBadge nodeCount={nodes.length} />
+      <CostBadge nodes={nodes} />
       <Toaster />
     </div>
   );

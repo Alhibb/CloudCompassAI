@@ -1,17 +1,18 @@
 'use client';
 
-import { Sparkles, Download, Image, Loader2, Menu } from 'lucide-react';
+import { Sparkles, Download, Image, Loader2, Menu, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface TopBarProps {
   onGenerate: () => void;
   onExport: () => void;
   onDownloadImage?: () => void;
+  onExplain?: () => void;
   isExporting?: boolean;
   onMenuClick: () => void;
 }
 
-export function TopBar({ onGenerate, onExport, onDownloadImage, isExporting, onMenuClick }: TopBarProps) {
+export function TopBar({ onGenerate, onExport, onDownloadImage, onExplain, isExporting, onMenuClick }: TopBarProps) {
   return (
     <div className="fixed top-0 left-0 md:left-[280px] right-0 h-[72px] bg-slate-900/40 backdrop-blur-xl border-b border-slate-800 px-4 md:px-8 flex items-center justify-between z-50">
       <div
@@ -42,6 +43,25 @@ export function TopBar({ onGenerate, onExport, onDownloadImage, isExporting, onM
           </h1>
         </div>
         <div className="flex items-center gap-2 md:gap-4">
+          {onExplain && (
+            <Button
+              onClick={onExplain}
+              variant="outline"
+              className="border-slate-700 bg-transparent hover:bg-slate-800/50 text-slate-200 font-medium px-3 py-2 rounded-lg transition-all duration-200 active:scale-[0.98] hover:border-slate-600"
+              style={{
+                boxShadow: '0 0 0 0 rgba(139, 92, 246, 0)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 20px rgba(139, 92, 246, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 0 0 rgba(139, 92, 246, 0)';
+              }}
+            >
+              <Info className="w-4 h-4 md:mr-2" />
+              <span className="hidden md:inline">Explain</span>
+            </Button>
+          )}
           <Button
             onClick={onGenerate}
             className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium px-3 md:px-6 py-2 rounded-lg transition-all duration-200 active:scale-[0.98] text-sm md:text-base"
